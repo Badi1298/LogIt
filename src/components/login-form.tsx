@@ -30,9 +30,16 @@ export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
-	const signIn = async () => {
+	const signInWithGoogle = async () => {
 		await authClient.signIn.social({
 			provider: "google",
+			callbackURL: "/",
+		});
+	};
+
+	const signInWithGitHub = async () => {
+		await authClient.signIn.social({
+			provider: "github",
 			callbackURL: "/",
 		});
 	};
@@ -80,7 +87,11 @@ export function LoginForm({
 					>
 						<FieldGroup>
 							<Field>
-								<Button variant="outline" type="button" onClick={signIn}>
+								<Button
+									variant="outline"
+									type="button"
+									onClick={signInWithGoogle}
+								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 										<title>Google</title>
 										<path
@@ -89,6 +100,13 @@ export function LoginForm({
 										/>
 									</svg>
 									Login with Google
+								</Button>
+								<Button
+									variant="outline"
+									type="button"
+									onClick={signInWithGitHub}
+								>
+									Login with GitHub
 								</Button>
 							</Field>
 							<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

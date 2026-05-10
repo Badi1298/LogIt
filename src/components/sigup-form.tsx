@@ -37,6 +37,20 @@ export function SignupForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
+	const signUpWithGoogle = async () => {
+		await authClient.signIn.social({
+			provider: "google",
+			callbackURL: "/",
+		});
+	};
+
+	const signUpWithGitHub = async () => {
+		await authClient.signIn.social({
+			provider: "github",
+			callbackURL: "/",
+		});
+	};
+
 	const form = useForm({
 		defaultValues: {
 			name: "",
@@ -84,7 +98,11 @@ export function SignupForm({
 					>
 						<FieldGroup>
 							<Field>
-								<Button variant="outline" type="button">
+								<Button
+									variant="outline"
+									type="button"
+									onClick={signUpWithGoogle}
+								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 24 24"
@@ -96,6 +114,13 @@ export function SignupForm({
 										/>
 									</svg>
 									Sign up with Google
+								</Button>
+								<Button
+									variant="outline"
+									type="button"
+									onClick={signUpWithGitHub}
+								>
+									Sign up with GitHub
 								</Button>
 							</Field>
 							<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
