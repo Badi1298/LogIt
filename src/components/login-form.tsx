@@ -88,9 +88,8 @@ export function LoginForm({
 								Or continue with
 							</FieldSeparator>
 
-							<form.Field
-								name="email"
-								children={(field) => {
+							<form.Field name="email">
+								{(field) => {
 									const isInvalid =
 										field.state.meta.isTouched && !field.state.meta.isValid;
 									return (
@@ -105,7 +104,7 @@ export function LoginForm({
 												onChange={(e) => field.handleChange(e.target.value)}
 												aria-invalid={isInvalid}
 												placeholder="m@example.com"
-												autoComplete="off"
+												autoComplete="email"
 											/>
 											{isInvalid && (
 												<FieldError errors={field.state.meta.errors} />
@@ -113,10 +112,9 @@ export function LoginForm({
 										</Field>
 									);
 								}}
-							/>
-							<form.Field
-								name="password"
-								children={(field) => {
+							</form.Field>
+							<form.Field name="password">
+								{(field) => {
 									const isInvalid =
 										field.state.meta.isTouched && !field.state.meta.isValid;
 									return (
@@ -131,7 +129,7 @@ export function LoginForm({
 												onChange={(e) => field.handleChange(e.target.value)}
 												aria-invalid={isInvalid}
 												placeholder="••••••••"
-												autoComplete="off"
+												autoComplete="new-password"
 											/>
 											{isInvalid && (
 												<FieldError errors={field.state.meta.errors} />
@@ -139,7 +137,7 @@ export function LoginForm({
 										</Field>
 									);
 								}}
-							/>
+							</form.Field>
 							<Field>
 								<Button type="submit">Login</Button>
 								<FieldDescription className="text-center">
