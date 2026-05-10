@@ -29,8 +29,11 @@ function Home() {
 	};
 
 	return (
-		<div>
-			Welcome, {user.name}!<Button onClick={handleLogout}>Logout</Button>
-		</div>
+		<main className="flex flex-col gap-y-10 h-screen w-screen items-center justify-center">
+			<h1 className="text-2xl font-bold">Welcome, {user.name}!</h1>
+			<Button size="lg" onClick={handleLogout}>
+				Logout
+			</Button>
+		</main>
 	);
 }
