@@ -17,7 +17,7 @@ import {
 	FieldSeparator,
 } from "#/components/ui/field.tsx";
 import { Input } from "#/components/ui/input.tsx";
-import { auth } from "#/lib/auth";
+import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils.ts";
 
 const formSchema = z.object({
@@ -38,11 +38,9 @@ export function LoginForm({
 			onSubmit: formSchema,
 		},
 		onSubmit: async (values) => {
-			await auth.api.signInEmail({
-				body: {
-					email: values.formApi.getFieldValue("email"),
-					password: values.formApi.getFieldValue("password"),
-				},
+			await authClient.signIn.email({
+				email: values.formApi.getFieldValue("email"),
+				password: values.formApi.getFieldValue("password"),
 			});
 		},
 	});
