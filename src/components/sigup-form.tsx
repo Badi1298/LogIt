@@ -48,11 +48,22 @@ export function SignupForm({
 			onSubmit: formSchema,
 		},
 		onSubmit: async (values) => {
-			await authClient.signUp.email({
-				name: values.formApi.getFieldValue("name"),
-				email: values.formApi.getFieldValue("email"),
-				password: values.formApi.getFieldValue("password"),
-			});
+			await authClient.signUp.email(
+				{
+					name: values.formApi.getFieldValue("name"),
+					email: values.formApi.getFieldValue("email"),
+					password: values.formApi.getFieldValue("password"),
+					callbackURL: "/login",
+				},
+				{
+					onSuccess: () => {
+						console.log("Signup successful, redirecting to login...");
+					},
+					onError: (error) => {
+						console.error("Signup failed:", error);
+					},
+				},
+			);
 		},
 	});
 

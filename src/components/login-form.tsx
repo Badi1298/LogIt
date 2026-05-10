@@ -39,10 +39,21 @@ export function LoginForm({
 			onSubmit: formSchema,
 		},
 		onSubmit: async (values) => {
-			await authClient.signIn.email({
-				email: values.formApi.getFieldValue("email"),
-				password: values.formApi.getFieldValue("password"),
-			});
+			await authClient.signIn.email(
+				{
+					email: values.formApi.getFieldValue("email"),
+					password: values.formApi.getFieldValue("password"),
+					callbackURL: "/",
+				},
+				{
+					onSuccess: () => {
+						console.log("Login successful, redirecting to home...");
+					},
+					onError: (error) => {
+						console.error("Login failed:", error);
+					},
+				},
+			);
 		},
 	});
 	return (
