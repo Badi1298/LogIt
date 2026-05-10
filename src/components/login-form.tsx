@@ -30,6 +30,13 @@ export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
+	const signIn = async () => {
+		await authClient.signIn.social({
+			provider: "google",
+			callbackURL: "/",
+		});
+	};
+
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -73,7 +80,7 @@ export function LoginForm({
 					>
 						<FieldGroup>
 							<Field>
-								<Button variant="outline" type="button">
+								<Button variant="outline" type="button" onClick={signIn}>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 										<title>Google</title>
 										<path
