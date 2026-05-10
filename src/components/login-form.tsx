@@ -17,6 +17,7 @@ import {
 	FieldSeparator,
 } from "#/components/ui/field.tsx";
 import { Input } from "#/components/ui/input.tsx";
+import { auth } from "#/lib/auth";
 import { cn } from "#/lib/utils.ts";
 
 const formSchema = z.object({
@@ -35,6 +36,14 @@ export function LoginForm({
 		},
 		validators: {
 			onSubmit: formSchema,
+		},
+		onSubmit: async (values) => {
+			await auth.api.signInEmail({
+				body: {
+					email: values.formApi.getFieldValue("email"),
+					password: values.formApi.getFieldValue("password"),
+				},
+			});
 		},
 	});
 	return (
