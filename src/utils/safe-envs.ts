@@ -1,5 +1,5 @@
 import { createServerOnlyFn } from "@tanstack/react-start";
-import { env } from "@/env";
+import { env } from "#/env";
 
 export const getBetterAuthUrl = createServerOnlyFn(() => env.BETTER_AUTH_URL);
 export const getBetterAuthSecret = createServerOnlyFn(
