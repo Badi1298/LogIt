@@ -3,6 +3,8 @@ import { z } from "zod";
 
 export const env = createEnv({
 	server: {
+		BETTER_AUTH_URL: z.url(),
+		BETTER_AUTH_SECRET: z.string(),
 		DATABASE_URL: z.string(),
 		GOOGLE_CLIENT_ID: z.string(),
 		GOOGLE_CLIENT_SECRET: z.string(),
@@ -15,14 +17,21 @@ export const env = createEnv({
 	clientPrefix: "VITE_",
 
 	client: {
-		VITE_APP_TITLE: z.string().min(1).optional(),
+		VITE_BASE_URL: z.url(),
 	},
 
 	/**
 	 * What object holds the environment variables at runtime. This is usually
 	 * `process.env` or `import.meta.env`.
 	 */
-	runtimeEnv: import.meta.env,
+	runtimeEnv: {
+		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+		BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+		DATABASE_URL: process.env.DATABASE_URL,
+		GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+		VITE_BASE_URL: import.meta.env.VITE_BASE_URL,
+	},
 
 	/**
 	 * By default, this library will feed the environment variables directly to

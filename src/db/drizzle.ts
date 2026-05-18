@@ -1,3 +1,4 @@
 import { drizzle } from "drizzle-orm/neon-http";
+import { getDatabaseUrl } from "#/utils/safe-envs";
 
-export const db = drizzle(process.env.DATABASE_URL as string);
+export const db = drizzle(getDatabaseUrl());
