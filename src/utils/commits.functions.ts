@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { simpleGit } from "simple-git";
-import { FetchCommitsInputSchema } from "./schema";
+import { ServerFetchCommitsInputSchema } from "./schema";
 
 // POST request
 export const saveData = createServerFn({ method: "POST" })
-	.inputValidator(FetchCommitsInputSchema)
+	.inputValidator(ServerFetchCommitsInputSchema)
 	.handler(async ({ data }) => {
 		try {
 			// Initialize simple-git targeting your local directory path

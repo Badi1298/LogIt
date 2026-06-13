@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/correctness/noChildrenProp: This is a necessary pattern for rendering the input fields */
 import { formOptions, useForm } from "@tanstack/react-form";
 import { FetchCommitsInputSchema } from "#/utils/schema";
+import { Button } from "../ui/button";
 import {
 	Card,
 	CardContent,
@@ -8,7 +9,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../ui/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import {
+	Field,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "../ui/field";
 import { Input } from "../ui/input";
 
 export function CommitDataForm() {
@@ -139,6 +146,12 @@ export function CommitDataForm() {
 								);
 							}}
 						</form.Field>
+						<Field>
+							<Button type="submit">Submit</Button>
+							<FieldDescription className="text-center">
+								Your input will be validated and processed upon submission.
+							</FieldDescription>
+						</Field>
 					</FieldGroup>
 				</form>
 			</CardContent>
