@@ -6,6 +6,7 @@ export const getBetterAuthSecret = createServerOnlyFn(
 	() => env.BETTER_AUTH_SECRET,
 );
 export const getDatabaseUrl = createServerOnlyFn(() => env.DATABASE_URL);
+export const getGoogleApiKey = createServerOnlyFn(() => env.GOOGLE_API_KEY);
 export const getGoogleClientId = createServerOnlyFn(() => env.GOOGLE_CLIENT_ID);
 export const getGoogleClientSecret = createServerOnlyFn(
 	() => env.GOOGLE_CLIENT_SECRET,

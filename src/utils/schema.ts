@@ -17,6 +17,12 @@ export const ServerFetchCommitsInputSchema = FetchCommitsInputSchema.refine(
 	},
 );
 
+export const CommitItemSchema = z.object({
+	date: z.string(),
+	message: z.string(),
+	jiraTicket: z.string(),
+});
+
 // Automatically extract the TypeScript type so you don't have to maintain both
 export type FetchCommitsInput = z.infer<typeof FetchCommitsInputSchema>;
 export type ServerFetchCommitsInput = z.infer<

@@ -26,9 +26,10 @@ export function CommitDataForm() {
 
 	const { mutateAsync } = useMutation({
 		mutationFn: saveDataFn,
-		onSuccess: ({ commits, error }) => {
+		onSuccess: ({ commits, analysis, error }) => {
 			if (commits) {
 				console.log("Data saved successfully:", commits);
+				console.log("Analysis result:", analysis);
 			} else {
 				console.error("Error saving data:", error);
 			}
