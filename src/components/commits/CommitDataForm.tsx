@@ -46,7 +46,7 @@ export function CommitDataForm() {
 			repoPath: "",
 			sinceDate: "",
 			untilDate: "",
-			authorEmail: "serban.david@flowmatters.com",
+			authorEmail: "serbandavid83@yahoo.com",
 		},
 		onSubmit: async ({ value }) => {
 			console.log("Form submitted with values:", value);

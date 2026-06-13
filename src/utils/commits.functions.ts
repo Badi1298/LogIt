@@ -33,12 +33,15 @@ export const saveData = createServerFn({ method: "POST" })
 				const jiraTicket = jiraMatch ? jiraMatch[1] : "NO-TICKET";
 
 				return {
-					hash: commit.hash,
 					date: commit.date, // Timestamp
 					message: commit.message,
 					jiraTicket,
 				};
 			});
+
+			processedCommits.sort(
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+			);
 
 			return { success: true, commits: processedCommits };
 		} catch (error: unknown) {
