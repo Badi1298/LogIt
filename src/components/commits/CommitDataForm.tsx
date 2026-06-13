@@ -3,7 +3,7 @@ import { formOptions, useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { saveData } from "#/utils/commits.functions";
-import { FetchCommitsInputSchema } from "#/utils/schema";
+import { FetchCommitsInputSchema, type WeeklyReport } from "#/utils/schema";
 import { Button } from "../ui/button";
 import {
 	Card,
@@ -21,7 +21,11 @@ import {
 } from "../ui/field";
 import { Input } from "../ui/input";
 
-export function CommitDataForm() {
+interface CommitDataFormProps {
+	onAnalysisComplete?: (analysis: WeeklyReport) => void;
+}
+
+export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 	const saveDataFn = useServerFn(saveData);
 
 	const { mutateAsync } = useMutation({
@@ -30,6 +34,14 @@ export function CommitDataForm() {
 			if (commits) {
 				console.log("Data saved successfully:", commits);
 				console.log("Analysis result:", analysis);
+				if (!analysis) {
+					console.warn("No analysis returned from server.");
+					return;
+				}
+
+				if (onAnalysisComplete) {
+					onAnalysisComplete({ tasks: JSON.parse(analysis) });
+				}
 			} else {
 				console.error("Error saving data:", error);
 			}

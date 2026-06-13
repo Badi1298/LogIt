@@ -3,7 +3,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { simpleGit } from "simple-git";
 import z from "zod";
 import { getGoogleApiKey } from "./safe-envs";
-import { CommitItemSchema, ServerFetchCommitsInputSchema } from "./schema";
+import {
+	CommitItemSchema,
+	nativeResponseSchema,
+	ServerFetchCommitsInputSchema,
+} from "./schema";
 
 const analyzeWeeklyCommits = createServerFn({ method: "POST" })
 	.inputValidator((data: unknown) => z.array(CommitItemSchema).parse(data))
@@ -23,10 +27,6 @@ const analyzeWeeklyCommits = createServerFn({ method: "POST" })
         1. Delta Calculation: Estimate time spent by calculating the difference between the current commit timestamp and the *immediately preceding* commit timestamp.
         2. Initial Momentum: For the absolute first commit in the payload, assume a standard 30-minute warm-up duration.
         3. The Break Rule: If the chronological gap between any two sequential commits exceeds 1.5 hours, assume a break or context switch. Cap the billable work allocation for that specific gap at 45 minutes, dismissing the remainder of the idle time.
-        
-        Format your response clearly. Group by 'jiraTicket' (or display 'NO-TICKET' tasks categorized cleanly), showing total estimated hours and a concise markdown bulleted summary of specific achievements.
-
-        Return the output ONLY as a JSON ready to be nicely taken by the front end team and displayed there, please!
         `.trim();
 
 		try {
@@ -35,6 +35,8 @@ const analyzeWeeklyCommits = createServerFn({ method: "POST" })
 				contents: JSON.stringify(commits),
 				config: {
 					systemInstruction,
+					responseMimeType: "application/json",
+					responseSchema: nativeResponseSchema,
 				},
 			});
 

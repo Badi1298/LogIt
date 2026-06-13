@@ -1,8 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useState } from "react";
+import AnalysisResultCard from "#/components/commits/AnalysisResultCard";
 import { CommitDataForm } from "#/components/commits/CommitDataForm";
 import { Button } from "#/components/ui/button";
 import { getSession } from "#/lib/auth.functions";
 import { authClient } from "#/lib/auth-client";
+import type { WeeklyReport } from "#/utils/schema";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: async () => {
@@ -18,6 +21,9 @@ export const Route = createFileRoute("/")({
 function Home() {
 	const navigate = Route.useNavigate();
 	const { user } = Route.useRouteContext();
+	const [analysisResult, setAnalysisResult] = useState<WeeklyReport | null>(
+		null,
+	);
 
 	const handleLogout = async () => {
 		await authClient.signOut({
@@ -31,7 +37,7 @@ function Home() {
 
 	return (
 		<main className="flex flex-col h-screen w-screen p-4">
-			<header className="flex justify-between items-center  rounded-lg mb-10">
+			<header className="flex justify-between items-center rounded-lg mb-10">
 				<div className="flex flex-col gap-y-1">
 					<h1 className="text-4xl font-bold">LogIt</h1>
 					<h2 className="text-2xl font-bold mb-5">Welcome, {user.name}!</h2>
@@ -40,8 +46,9 @@ function Home() {
 					Logout
 				</Button>
 			</header>
-			<section className="flex flex-col items-center flex-1">
-				<CommitDataForm />
+			<section className="grid grid-cols-2 gap-4 justify-items-center items-center flex-1">
+				<CommitDataForm onAnalysisComplete={setAnalysisResult} />
+				<AnalysisResultCard analysisData={analysisResult || { tasks: [] }} />
 			</section>
 		</main>
 	);
