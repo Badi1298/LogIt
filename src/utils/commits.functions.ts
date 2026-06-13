@@ -1,24 +1,6 @@
-import path from "node:path";
 import { createServerFn } from "@tanstack/react-start";
 import { simpleGit } from "simple-git";
-import { z } from "zod";
-
-export const FetchCommitsInputSchema = z.object({
-	repoPath: z
-		.string()
-		.min(1)
-		.refine((val) => path.isAbsolute(val), {
-			message: "repoPath must be an absolute path",
-		}),
-
-	// .date() natively enforces "YYYY-MM-DD" in Zod 3.23+
-	sinceDate: z.iso.date("sinceDate must be in YYYY-MM-DD format"),
-	untilDate: z.iso.date("untilDate must be in YYYY-MM-DD format"),
-	authorEmail: z.email("Invalid email address format"),
-});
-
-// Automatically extract the TypeScript type so you don't have to maintain both
-export type FetchCommitsInput = z.infer<typeof FetchCommitsInputSchema>;
+import { FetchCommitsInputSchema } from "./schema";
 
 // POST request
 export const saveData = createServerFn({ method: "POST" })
@@ -59,7 +41,9 @@ export const saveData = createServerFn({ method: "POST" })
 			});
 
 			return { success: true, commits: processedCommits };
-		} catch (error: any) {
-			return { success: false, error: error.message };
+		} catch (error: unknown) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+			return { success: false, error: errorMessage };
 		}
 	});
