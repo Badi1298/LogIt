@@ -31,17 +31,18 @@ function Home() {
 
 	return (
 		<main className="flex flex-col h-screen w-screen p-4">
-			<header className="flex justify-between items-center p-4 bg-green-50 rounded-lg shadow-md mb-10">
+			<header className="flex justify-between items-center p-4 rounded-lg mb-10">
 				<div className="flex flex-col gap-y-1">
 					<h1 className="text-4xl font-bold">LogIt</h1>
-					<p className="text-lg text-gray-600">Your Git Commit Analyzer</p>
+					<h2 className="text-2xl font-bold mb-5">Welcome, {user.name}!</h2>
 				</div>
 				<Button size="lg" onClick={handleLogout}>
 					Logout
 				</Button>
 			</header>
-			<h1 className="text-2xl font-bold mb-5">Welcome, {user.name}!</h1>
-			<CommitDataForm />
+			<section className="flex flex-col items-center flex-1">
+				<CommitDataForm />
+			</section>
 		</main>
 	);
 }
