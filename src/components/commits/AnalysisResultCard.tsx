@@ -28,8 +28,15 @@ const AnalysisResultCard = ({ analysisData }: Props) => {
 							<li key={task.id}>
 								<strong>{task.jiraTicket}</strong>: {task.totalHours}
 								<ul className="list-disc list-inside ml-4">
-									{task.achievements.map((achievement) => (
-										<li key={task.id}>{achievement}</li>
+									{task.achievements.map((achievement, index) => (
+										<li
+											key={`${task.id}-${
+												// biome-ignore lint/suspicious/noArrayIndexKey: <Read only list of achievements that won't change, so using index as key is acceptable here>
+												index
+											}`}
+										>
+											{achievement}
+										</li>
 									))}
 								</ul>
 							</li>

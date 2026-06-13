@@ -56,15 +56,13 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 			onChange: FetchCommitsInputSchema,
 		},
 		defaultValues: {
-			repoPath: "",
-			sinceDate: "",
-			untilDate: "",
+			repoPath: "B:\\LogIt",
+			sinceDate: new Date("2026-06-09").toISOString().split("T")[0], // Default to 7 days ago
+			untilDate: new Date("2026-07-16").toISOString().split("T")[0], // Default to today
 			authorEmail: "serbandavid83@yahoo.com",
 		},
 		onSubmit: async ({ value }) => {
-			console.log("Form submitted with values:", value);
-			const result = await mutateAsync({ data: value });
-			console.log("Mutation completed", result);
+			await mutateAsync({ data: value });
 		},
 	});
 
@@ -181,7 +179,9 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 							}}
 						</form.Field>
 						<Field>
-							<Button type="submit">Submit</Button>
+							<Button type="submit">
+								{form.state.isSubmitting ? "Submitting..." : "Submit"}
+							</Button>
 							<FieldDescription className="text-center">
 								Your input will be validated and processed upon submission.
 							</FieldDescription>
