@@ -40,7 +40,7 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 				}
 
 				if (onAnalysisComplete) {
-					onAnalysisComplete({ tasks: JSON.parse(analysis) });
+					onAnalysisComplete(JSON.parse(analysis));
 				}
 			} else {
 				console.error("Error saving data:", error);
@@ -71,7 +71,7 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 	const form = useForm(formOpts);
 
 	return (
-		<Card className="w-lg">
+		<Card className="w-lg justify-self-end">
 			<CardHeader className="text-center">
 				<CardTitle className="text-xl">Commit Data Form</CardTitle>
 				<CardDescription>

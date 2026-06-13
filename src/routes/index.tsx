@@ -46,7 +46,7 @@ function Home() {
 					Logout
 				</Button>
 			</header>
-			<section className="grid grid-cols-2 gap-4 justify-items-center items-center flex-1">
+			<section className="grid grid-cols-2 gap-20 items-center flex-1">
 				<CommitDataForm onAnalysisComplete={setAnalysisResult} />
 				<AnalysisResultCard analysisData={analysisResult || { tasks: [] }} />
 			</section>

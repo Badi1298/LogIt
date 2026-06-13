@@ -37,9 +37,9 @@ export const WeeklyReportSchema = z.object({
 					"The Jira ticket key, or 'NO-TICKET' for miscellaneous work.",
 				),
 			totalHours: z
-				.number()
+				.string()
 				.describe(
-					"The calculated total time spent on this ticket for the week in hours.",
+					"The calculated total time spent on this ticket for the week in Jira's native string format (e.g., '3h 45m', '1h 20m', '2h', '15m').",
 				),
 			achievements: z
 				.array(z.string())
@@ -68,8 +68,9 @@ export const nativeResponseSchema = {
 						description: "The Jira ticket key or 'NO-TICKET'",
 					},
 					totalHours: {
-						type: "NUMBER",
-						description: "Total time spent on this ticket in hours",
+						type: "STRING",
+						description:
+							"Total time spent on this ticket in Jira's native string format for logging work (e.g., '3h 45m', '1h 20m', '2h', '15m'). Do not include 0m or 0h elements (write '2h', not '2h 0m').",
 					},
 					achievements: {
 						type: "ARRAY",

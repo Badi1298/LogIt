@@ -27,6 +27,11 @@ const analyzeWeeklyCommits = createServerFn({ method: "POST" })
         1. Delta Calculation: Estimate time spent by calculating the difference between the current commit timestamp and the *immediately preceding* commit timestamp.
         2. Initial Momentum: For the absolute first commit in the payload, assume a standard 30-minute warm-up duration.
         3. The Break Rule: If the chronological gap between any two sequential commits exceeds 1.5 hours, assume a break or context switch. Cap the billable work allocation for that specific gap at 45 minutes, dismissing the remainder of the idle time.
+
+        Formatting and Rounding Rules:
+        - Always round the calculated time UP to the nearest 5-minute increment. Never round down.
+        - Convert the total calculated decimal hours into Jira's native string format for logging work.
+        - Examples of valid formats: '3h 45m', '1h 20m', '2h', '15m'. Do not include 0m or 0h elements (write '2h', not '2h 0m').
         `.trim();
 
 		try {

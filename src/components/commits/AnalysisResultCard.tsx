@@ -13,7 +13,7 @@ type Props = {
 
 const AnalysisResultCard = ({ analysisData }: Props) => {
 	return (
-		<Card className="w-lg h-145 overflow-y-scroll">
+		<Card className="h-full overflow-y-scroll">
 			<CardHeader className="text-center">
 				<CardTitle className="text-xl">Analysis Result</CardTitle>
 				<CardDescription>
@@ -26,7 +26,7 @@ const AnalysisResultCard = ({ analysisData }: Props) => {
 					<ul>
 						{analysisData.tasks.map((task) => (
 							<li key={task.id}>
-								<strong>{task.jiraTicket}</strong>: {task.totalHours} hours
+								<strong>{task.jiraTicket}</strong>: {task.totalHours}
 								<ul className="list-disc list-inside ml-4">
 									{task.achievements.map((achievement) => (
 										<li key={task.id}>{achievement}</li>
