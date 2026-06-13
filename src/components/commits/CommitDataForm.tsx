@@ -1,5 +1,8 @@
 /** biome-ignore-all lint/correctness/noChildrenProp: This is a necessary pattern for rendering the input fields */
 import { formOptions, useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { saveData } from "#/utils/commits.functions";
 import { FetchCommitsInputSchema } from "#/utils/schema";
 import { Button } from "../ui/button";
 import {
@@ -19,6 +22,22 @@ import {
 import { Input } from "../ui/input";
 
 export function CommitDataForm() {
+	const saveDataFn = useServerFn(saveData);
+
+	const { mutateAsync } = useMutation({
+		mutationFn: saveDataFn,
+		onSuccess: ({ commits, error }) => {
+			if (commits) {
+				console.log("Data saved successfully:", commits);
+			} else {
+				console.error("Error saving data:", error);
+			}
+		},
+		onError: (error) => {
+			console.error("Mutation error:", error);
+		},
+	});
+
 	const formOpts = formOptions({
 		validators: {
 			onChange: FetchCommitsInputSchema,
@@ -31,6 +50,8 @@ export function CommitDataForm() {
 		},
 		onSubmit: async ({ value }) => {
 			console.log("Form submitted with values:", value);
+			const result = await mutateAsync({ data: value });
+			console.log("Mutation completed", result);
 		},
 	});
 
