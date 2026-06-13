@@ -32,8 +32,6 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 		mutationFn: saveDataFn,
 		onSuccess: ({ commits, analysis, error }) => {
 			if (commits) {
-				console.log("Data saved successfully:", commits);
-				console.log("Analysis result:", analysis);
 				if (!analysis) {
 					console.warn("No analysis returned from server.");
 					return;
