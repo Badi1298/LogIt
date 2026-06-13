@@ -40,7 +40,7 @@ function Home() {
 					Logout
 				</Button>
 			</header>
-			<h1 className="text-2xl font-bold">Welcome, {user.name}!</h1>
+			<h1 className="text-2xl font-bold mb-5">Welcome, {user.name}!</h1>
 			<CommitDataForm />
 		</main>
 	);
