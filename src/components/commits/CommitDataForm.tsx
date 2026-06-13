@@ -179,7 +179,7 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 							}}
 						</form.Field>
 						<Field>
-							<Button type="submit">
+							<Button type="submit" disabled={form.state.isSubmitting}>
 								{form.state.isSubmitting ? "Submitting..." : "Submit"}
 							</Button>
 							<FieldDescription className="text-center">

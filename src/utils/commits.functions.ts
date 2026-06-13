@@ -36,7 +36,7 @@ const analyzeWeeklyCommits = createServerFn({ method: "POST" })
 
 		try {
 			const response = await ai.models.generateContent({
-				model: "gemini-3.5-flash",
+				model: "gemini-3-flash-preview",
 				contents: JSON.stringify(commits),
 				config: {
 					systemInstruction,
