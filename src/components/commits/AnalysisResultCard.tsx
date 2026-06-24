@@ -13,7 +13,7 @@ type Props = {
 
 const AnalysisResultCard = ({ analysisData }: Props) => {
 	return (
-		<Card className="h-full overflow-y-scroll">
+		<Card className="max-h-[75vh] overflow-y-scroll">
 			<CardHeader className="text-center">
 				<CardTitle className="text-xl">Analysis Result</CardTitle>
 				<CardDescription>

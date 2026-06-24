@@ -10,7 +10,7 @@ import {
 } from "./schema";
 
 const analyzeWeeklyCommits = createServerFn({ method: "POST" })
-	.inputValidator((data: unknown) => z.array(CommitItemSchema).parse(data))
+	.validator((data: unknown) => z.array(CommitItemSchema).parse(data))
 	.handler(async ({ data: commits }) => {
 		// This executes purely on the server side
 		const apiKey = getGoogleApiKey();
@@ -57,7 +57,7 @@ const analyzeWeeklyCommits = createServerFn({ method: "POST" })
 	});
 
 export const saveData = createServerFn({ method: "POST" })
-	.inputValidator(ServerFetchCommitsInputSchema)
+	.validator(ServerFetchCommitsInputSchema)
 	.handler(async ({ data }) => {
 		try {
 			// Initialize simple-git targeting your local directory path

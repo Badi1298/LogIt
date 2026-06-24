@@ -54,10 +54,10 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 			onChange: FetchCommitsInputSchema,
 		},
 		defaultValues: {
-			repoPath: "B:\\LogIt",
+			repoPath: "",
 			sinceDate: new Date("2026-06-09").toISOString().split("T")[0], // Default to 7 days ago
 			untilDate: new Date("2026-07-16").toISOString().split("T")[0], // Default to today
-			authorEmail: "serbandavid83@yahoo.com",
+			authorEmail: "serban.david@flowmatters.com",
 		},
 		onSubmit: async ({ value }) => {
 			await mutateAsync({ data: value });
