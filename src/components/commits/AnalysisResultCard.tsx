@@ -42,23 +42,25 @@ const AnalysisResultCard = ({ analysisData, formData }: Props) => {
 	return (
 		<Card className="max-h-[75vh] overflow-y-scroll">
 			<CardHeader className="text-center relative">
-				<CardTitle className="text-xl">Analysis Result</CardTitle>
+				<CardTitle className="text-xl relative">
+					<h3>Analysis Result</h3>
+					{formData && analysisData.tasks.length > 0 && (
+						<div className="absolute top-1/2 -translate-y-1/2 right-4">
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={handleSave}
+								disabled={isSaving}
+							>
+								{isSaving ? "Saving..." : "Save response"}
+							</Button>
+						</div>
+					)}
+				</CardTitle>
 				<CardDescription>
 					Here you can see the results of your commit data analysis request. The
 					analysis will provide insights based on the commit data you submitted.
 				</CardDescription>
-				{formData && analysisData.tasks.length > 0 && (
-					<div className="absolute top-4 right-4">
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={handleSave}
-							disabled={isSaving}
-						>
-							{isSaving ? "Saving..." : "Save response"}
-						</Button>
-					</div>
-				)}
 			</CardHeader>
 			<CardContent>
 				{analysisData.tasks.length > 0 ? (
