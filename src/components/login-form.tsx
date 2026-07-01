@@ -37,12 +37,12 @@ export function LoginForm({
 		});
 	};
 
-	// const signInWithGitHub = async () => {
-	// 	await authClient.signIn.social({
-	// 		provider: "github",
-	// 		callbackURL: "/",
-	// 	});
-	// };
+	const signInWithGitHub = async () => {
+		await authClient.signIn.social({
+			provider: "github",
+			callbackURL: "/",
+		});
+	};
 
 	const form = useForm({
 		defaultValues: {
@@ -101,13 +101,13 @@ export function LoginForm({
 									</svg>
 									Login with Google
 								</Button>
-								{/* <Button
+								<Button
 									variant="outline"
 									type="button"
 									onClick={signInWithGitHub}
 								>
 									Login with GitHub
-								</Button> */}
+								</Button>
 							</Field>
 							<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
 								Or continue with

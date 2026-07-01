@@ -127,10 +127,23 @@ export const selectFolder = createServerFn({ method: "GET" }).handler(
 		try {
 			const { exec } = await import("node:child_process");
 			const { promisify } = await import("node:util");
+			const os = await import("node:os");
+			
 			const execAsync = promisify(exec);
-			const { stdout } = await execAsync(
-				`osascript -e 'POSIX path of (choose folder with prompt "Select the Git repository folder:")'`,
-			);
+			const platform = os.platform();
+			let command = "";
+
+			if (platform === "darwin") {
+				command = `osascript -e 'POSIX path of (choose folder with prompt "Select the Git repository folder:")'`;
+			} else if (platform === "win32") {
+				command = `powershell -Command "Add-Type -AssemblyName System.windows.forms; $f=New-Object System.Windows.Forms.FolderBrowserDialog; $f.Description = 'Select the Git repository folder'; $f.ShowNewFolderButton = $false; if($f.ShowDialog() -eq 'OK'){ $f.SelectedPath }"`;
+			} else if (platform === "linux") {
+				command = `zenity --file-selection --directory --title="Select the Git repository folder"`;
+			} else {
+				throw new Error("Unsupported operating system for folder selection.");
+			}
+
+			const { stdout } = await execAsync(command);
 			return { success: true, path: stdout.trim() };
 		} catch (error: unknown) {
 			console.error("Folder selection cancelled or failed:", error);
