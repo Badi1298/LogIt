@@ -23,19 +23,30 @@ const AnalysisResultCard = ({ analysisData }: Props) => {
 			</CardHeader>
 			<CardContent>
 				{analysisData.tasks.length > 0 ? (
-					<ul>
+					<ul className="space-y-4">
 						{analysisData.tasks.map((task) => (
-							<li key={task.id}>
-								<strong>{task.jiraTicket}</strong>: {task.totalHours}
-								<ul className="list-disc list-inside ml-4">
-									{task.achievements.map((achievement, index) => (
-										<li
-											key={`${task.id}-${
-												// biome-ignore lint/suspicious/noArrayIndexKey: <Read only list of achievements that won't change, so using index as key is acceptable here>
-												index
-											}`}
-										>
-											{achievement}
+							<li key={task.id} className="border-b pb-4 last:border-0">
+								<div className="font-bold text-lg mb-2">
+									{task.jiraTicket}:{" "}
+									<span className="font-normal">{task.totalHours}</span>
+								</div>
+								<ul className="space-y-2 ml-4">
+									{task.dailyWork?.map((dayWork, dayIndex) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: <Read only list of daily work that won't change, so using index as key is acceptable here>
+										<li key={`${task.id}-day-${dayIndex}`}>
+											<div className="font-semibold text-sm">
+												- {dayWork.date}, {dayWork.hours}:
+											</div>
+											<ul className="list-disc list-inside ml-6 text-sm text-muted-foreground mt-1 space-y-1">
+												{dayWork.achievements.map((achievement, index) => (
+													<li
+														// biome-ignore lint/suspicious/noArrayIndexKey: <Read only list of achievements that won't change>
+														key={`${task.id}-day-${dayIndex}-ach-${index}`}
+													>
+														{achievement}
+													</li>
+												))}
+											</ul>
 										</li>
 									))}
 								</ul>

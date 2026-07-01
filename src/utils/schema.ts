@@ -39,13 +39,21 @@ export const WeeklyReportSchema = z.object({
 			totalHours: z
 				.string()
 				.describe(
-					"The calculated total time spent on this ticket for the week in Jira's native format, followed by the daily breakdown with dates in parentheses (e.g., '3h 45m (Mon 26th: 1h 30m, Tue 27th: 2h)').",
+					"The calculated total time spent on this ticket for the week in Jira's native format (e.g., '6h 30m').",
 				),
-			achievements: z
-				.array(z.string())
-				.describe(
-					"A list of clean, descriptive bullet summaries showing what was built or fixed.",
-				),
+			dailyWork: z
+				.array(
+					z.object({
+						date: z.string().describe("The date formatted as Day Date (e.g., 'Mon 26th')."),
+						hours: z.string().describe("Time spent on this specific day in Jira's native format (e.g., '3h 15m')."),
+						achievements: z
+							.array(z.string())
+							.describe(
+								"A list of clean, descriptive bullet summaries showing what was built or fixed on this specific day.",
+							),
+					})
+				)
+				.describe("A daily breakdown of work done on this ticket."),
 		}),
 	),
 });
@@ -70,16 +78,34 @@ export const nativeResponseSchema = {
 					totalHours: {
 						type: "STRING",
 						description:
-							"Total time spent on this ticket in Jira's native string format, followed by daily breakdown with dates in parentheses, e.g., '3h 45m (Mon 26th: 1h 30m, Tue 27th: 2h, Wed 28th: 0h 15m)'. Do not include 0m or 0h elements.",
+							"Total time spent on this ticket in Jira's native string format, e.g., '6h 30m'. Do not include 0m or 0h elements.",
 					},
-					achievements: {
+					dailyWork: {
 						type: "ARRAY",
-						items: { type: "STRING" },
-						description:
-							"List of concise summaries detailing specific milestones achieved",
+						description: "A daily breakdown of work done on this ticket.",
+						items: {
+							type: "OBJECT",
+							properties: {
+								date: {
+									type: "STRING",
+									description: "The date formatted as Day Date (e.g., 'Mon 26th')."
+								},
+								hours: {
+									type: "STRING",
+									description: "Time spent on this specific day in Jira's native format (e.g., '3h 15m')."
+								},
+								achievements: {
+									type: "ARRAY",
+									items: { type: "STRING" },
+									description:
+										"List of concise summaries detailing specific milestones achieved on this day",
+								},
+							},
+							required: ["date", "hours", "achievements"],
+						},
 					},
 				},
-				required: ["id", "jiraTicket", "totalHours", "achievements"],
+				required: ["id", "jiraTicket", "totalHours", "dailyWork"],
 			},
 		},
 	},
