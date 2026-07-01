@@ -2,7 +2,9 @@
 
 import { formOptions, useForm } from "@tanstack/react-form";
 import { useServerFn } from "@tanstack/react-start";
+import { addDays, format, startOfWeek, subWeeks } from "date-fns";
 import { useEffect, useState } from "react";
+
 import {
 	analyzeWeeklyCommits,
 	fetchGitHistory,
@@ -65,14 +67,19 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 		"idle" | "fetching" | "analyzing" | "checkingDB"
 	>("idle");
 
+	const prevWeekMonday = startOfWeek(subWeeks(new Date(), 1), {
+		weekStartsOn: 1,
+	});
+	const prevWeekFriday = addDays(prevWeekMonday, 4);
+
 	const formOpts = formOptions({
 		validators: {
 			onChange: FetchCommitsInputSchema,
 		},
 		defaultValues: {
 			repoPath: "",
-			sinceDate: new Date("2026-06-09").toISOString().split("T")[0], // Default to 7 days ago
-			untilDate: new Date("2026-07-16").toISOString().split("T")[0], // Default to today
+			sinceDate: format(prevWeekMonday, "yyyy-MM-dd"),
+			untilDate: format(prevWeekFriday, "yyyy-MM-dd"),
 			authorEmail: "serban.david@flowmatters.com",
 		},
 		onSubmit: async ({ value }) => {
