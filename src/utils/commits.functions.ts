@@ -75,15 +75,30 @@ export const saveData = createServerFn({ method: "POST" })
 				"--until": data.untilDate,
 				"--author": data.authorEmail,
 				"--all": null, // Inspects all branches, not just the currently checked-out one
+				"--source": null,
+				format: {
+					hash: "%H",
+					date: "%aI",
+					message: "%s",
+					refs: "%D",
+					body: "%b",
+					author_name: "%aN",
+					author_email: "%aE",
+					source: "%S",
+				},
 			};
 
 			const logSummary = await git.log(logOptions);
 
 			// Post-process commits: Group messages by Jira ticket
 			const processedCommits = logSummary.all.map((commit) => {
-				// Regex to match Jira key format: e.g., PROJ-123
-				const jiraMatch = commit.message.match(/^([A-Z]+-\d+)/);
-				const jiraTicket = jiraMatch ? jiraMatch[1] : "NO-TICKET";
+				const source = commit.source || "";
+				const branchName = source.replace(
+					/^refs\/(heads|remotes\/[^/]+)\//,
+					"",
+				);
+
+				const jiraTicket = branchName || "NO-TICKET";
 
 				return {
 					date: commit.date, // Timestamp
