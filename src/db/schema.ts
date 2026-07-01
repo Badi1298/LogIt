@@ -76,6 +76,7 @@ export const verification = pgTable(
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
 	accounts: many(account),
+	analysisResponses: many(analysisResponses),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -91,3 +92,45 @@ export const accountRelations = relations(account, ({ one }) => ({
 		references: [user.id],
 	}),
 }));
+
+export const analysisResponses = pgTable(
+	"analysis_responses",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		repoPath: text("repo_path").notNull(),
+		sinceDate: text("since_date").notNull(),
+		untilDate: text("until_date").notNull(),
+		authorEmail: text("author_email").notNull(),
+		analysis: text("analysis").notNull(), // JSON string
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.notNull(),
+	},
+	(table) => [
+		index("analysis_responses_userId_idx").on(table.userId),
+		index("analysis_responses_query_idx").on(
+			table.userId,
+			table.repoPath,
+			table.sinceDate,
+			table.untilDate,
+			table.authorEmail,
+		),
+	],
+);
+
+export const analysisResponsesRelations = relations(
+	analysisResponses,
+	({ one }) => ({
+		user: one(user, {
+			fields: [analysisResponses.userId],
+			references: [user.id],
+		}),
+	}),
+);

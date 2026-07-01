@@ -5,7 +5,7 @@ import { CommitDataForm } from "#/components/commits/CommitDataForm";
 import { Button } from "#/components/ui/button";
 import { getSession } from "#/lib/auth.functions";
 import { authClient } from "#/lib/auth-client";
-import type { WeeklyReport } from "#/utils/schema";
+import type { FetchCommitsInput, WeeklyReport } from "#/utils/schema";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: async () => {
@@ -22,6 +22,9 @@ function Home() {
 	const navigate = Route.useNavigate();
 	const { user } = Route.useRouteContext();
 	const [analysisResult, setAnalysisResult] = useState<WeeklyReport | null>(
+		null,
+	);
+	const [lastFormData, setLastFormData] = useState<FetchCommitsInput | null>(
 		null,
 	);
 
@@ -47,8 +50,16 @@ function Home() {
 				</Button>
 			</header>
 			<section className="grid grid-cols-2 gap-20 items-center flex-1">
-				<CommitDataForm onAnalysisComplete={setAnalysisResult} />
-				<AnalysisResultCard analysisData={analysisResult || { tasks: [] }} />
+				<CommitDataForm
+					onAnalysisComplete={(analysis, formData) => {
+						setAnalysisResult(analysis);
+						setLastFormData(formData);
+					}}
+				/>
+				<AnalysisResultCard
+					analysisData={analysisResult || { tasks: [] }}
+					formData={lastFormData}
+				/>
 			</section>
 		</main>
 	);

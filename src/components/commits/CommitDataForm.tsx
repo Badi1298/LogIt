@@ -7,7 +7,12 @@ import {
 	analyzeWeeklyCommits,
 	fetchGitHistory,
 } from "#/utils/commits.functions";
-import { FetchCommitsInputSchema, type WeeklyReport } from "#/utils/schema";
+import { checkExistingAnalysis } from "#/utils/db.functions";
+import {
+	type FetchCommitsInput,
+	FetchCommitsInputSchema,
+	type WeeklyReport,
+} from "#/utils/schema";
 import { Button } from "../ui/button";
 import {
 	Card,
@@ -26,7 +31,10 @@ import {
 import { Input } from "../ui/input";
 
 interface CommitDataFormProps {
-	onAnalysisComplete?: (analysis: WeeklyReport) => void;
+	onAnalysisComplete?: (
+		analysis: WeeklyReport,
+		formData: FetchCommitsInput,
+	) => void;
 }
 
 function DynamicAnalyzingText() {
@@ -51,9 +59,10 @@ function DynamicAnalyzingText() {
 export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 	const fetchGitHistoryFn = useServerFn(fetchGitHistory);
 	const analyzeWeeklyCommitsFn = useServerFn(analyzeWeeklyCommits);
+	const checkExistingAnalysisFn = useServerFn(checkExistingAnalysis);
 
 	const [loadingState, setLoadingState] = useState<
-		"idle" | "fetching" | "analyzing"
+		"idle" | "fetching" | "analyzing" | "checkingDB"
 	>("idle");
 
 	const formOpts = formOptions({
@@ -78,7 +87,7 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 					});
 
 					if (aiResult?.analysis && onAnalysisComplete) {
-						onAnalysisComplete(JSON.parse(aiResult.analysis));
+						onAnalysisComplete(JSON.parse(aiResult.analysis), value);
 					}
 				} else {
 					console.error("Error fetching git history");
@@ -204,12 +213,56 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 							}}
 						</form.Field>
 						<Field>
-							<Button type="submit" disabled={loadingState !== "idle"}>
-								{loadingState === "idle" && "Submit"}
-								{loadingState === "fetching" &&
-									"Extracting local Git history..."}
-								{loadingState === "analyzing" && <DynamicAnalyzingText />}
-							</Button>
+							<div className="flex gap-4">
+								<Button
+									type="submit"
+									disabled={loadingState !== "idle"}
+									className="flex-1"
+								>
+									{loadingState === "idle" && "Submit"}
+									{loadingState === "fetching" &&
+										"Extracting local Git history..."}
+									{loadingState === "analyzing" && <DynamicAnalyzingText />}
+									{loadingState === "checkingDB" && "Checking Database..."}
+								</Button>
+								<Button
+									type="button"
+									variant="secondary"
+									disabled={loadingState !== "idle"}
+									onClick={async () => {
+										const isValid = await form.validateAllFields("change");
+										if (isValid.length > 0) return; // Validation errors exist
+
+										try {
+											setLoadingState("checkingDB");
+											const result = await checkExistingAnalysisFn({
+												data: form.state.values,
+											});
+											if (
+												result.success &&
+												result.analysis &&
+												onAnalysisComplete
+											) {
+												onAnalysisComplete(
+													JSON.parse(result.analysis),
+													form.state.values,
+												);
+											} else {
+												alert(
+													"No saved analysis found for this query in the database.",
+												);
+											}
+										} catch (err) {
+											console.error(err);
+											alert("Error checking database.");
+										} finally {
+											setLoadingState("idle");
+										}
+									}}
+								>
+									Check DB
+								</Button>
+							</div>
 							<FieldDescription className="text-center">
 								Your input will be validated and processed upon submission.
 							</FieldDescription>

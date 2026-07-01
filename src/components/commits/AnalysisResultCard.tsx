@@ -1,4 +1,8 @@
-import type { WeeklyReport } from "#/utils/schema";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { saveAnalysisResponse } from "#/utils/db.functions";
+import type { FetchCommitsInput, WeeklyReport } from "#/utils/schema";
+import { Button } from "../ui/button";
 import {
 	Card,
 	CardContent,
@@ -9,17 +13,52 @@ import {
 
 type Props = {
 	analysisData: WeeklyReport;
+	formData?: FetchCommitsInput | null;
 };
 
-const AnalysisResultCard = ({ analysisData }: Props) => {
+const AnalysisResultCard = ({ analysisData, formData }: Props) => {
+	const saveAnalysisResponseFn = useServerFn(saveAnalysisResponse);
+	const [isSaving, setIsSaving] = useState(false);
+
+	const handleSave = async () => {
+		if (!formData || !analysisData || analysisData.tasks.length === 0) return;
+		try {
+			setIsSaving(true);
+			await saveAnalysisResponseFn({
+				data: {
+					formData,
+					analysis: JSON.stringify(analysisData),
+				},
+			});
+			alert("Response saved successfully!");
+		} catch (err) {
+			console.error(err);
+			alert("Error saving response.");
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
 	return (
 		<Card className="max-h-[75vh] overflow-y-scroll">
-			<CardHeader className="text-center">
+			<CardHeader className="text-center relative">
 				<CardTitle className="text-xl">Analysis Result</CardTitle>
 				<CardDescription>
 					Here you can see the results of your commit data analysis request. The
 					analysis will provide insights based on the commit data you submitted.
 				</CardDescription>
+				{formData && analysisData.tasks.length > 0 && (
+					<div className="absolute top-4 right-4">
+						<Button
+							size="sm"
+							variant="outline"
+							onClick={handleSave}
+							disabled={isSaving}
+						>
+							{isSaving ? "Saving..." : "Save response"}
+						</Button>
+					</div>
+				)}
 			</CardHeader>
 			<CardContent>
 				{analysisData.tasks.length > 0 ? (
