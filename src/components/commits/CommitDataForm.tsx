@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import {
 	analyzeWeeklyCommits,
 	fetchGitHistory,
+	selectFolder,
 } from "#/utils/commits.functions";
 import { checkExistingAnalysis } from "#/utils/db.functions";
 import {
@@ -62,6 +63,7 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 	const fetchGitHistoryFn = useServerFn(fetchGitHistory);
 	const analyzeWeeklyCommitsFn = useServerFn(analyzeWeeklyCommits);
 	const checkExistingAnalysisFn = useServerFn(checkExistingAnalysis);
+	const selectFolderFn = useServerFn(selectFolder);
 
 	const [loadingState, setLoadingState] = useState<
 		"idle" | "fetching" | "analyzing" | "checkingDB"
@@ -133,15 +135,34 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 								return (
 									<Field data-invalid={isInvalid}>
 										<FieldLabel htmlFor={field.name}>Repo Path</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={(e) => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="e.g., /absolute/path/to/repo"
-										/>
+										<div className="flex gap-2">
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												aria-invalid={isInvalid}
+												placeholder="e.g., /absolute/path/to/repo"
+												className="flex-1"
+											/>
+											<Button
+												type="button"
+												variant="outline"
+												onClick={async () => {
+													try {
+														const result = await selectFolderFn();
+														if (result?.success && result.path) {
+															field.handleChange(result.path);
+														}
+													} catch (err) {
+														console.error(err);
+													}
+												}}
+											>
+												Browse
+											</Button>
+										</div>
 										{isInvalid && (
 											<FieldError errors={field.state.meta.errors} />
 										)}

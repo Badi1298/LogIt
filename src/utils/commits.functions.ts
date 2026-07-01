@@ -121,3 +121,23 @@ export const fetchGitHistory = createServerFn({ method: "POST" })
 			return { success: false, error: errorMessage };
 		}
 	});
+
+export const selectFolder = createServerFn({ method: "GET" }).handler(
+	async () => {
+		try {
+			const { exec } = await import("node:child_process");
+			const { promisify } = await import("node:util");
+			const execAsync = promisify(exec);
+			const { stdout } = await execAsync(
+				`osascript -e 'POSIX path of (choose folder with prompt "Select the Git repository folder:")'`,
+			);
+			return { success: true, path: stdout.trim() };
+		} catch (error: unknown) {
+			console.error("Folder selection cancelled or failed:", error);
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : String(error),
+			};
+		}
+	},
+);
