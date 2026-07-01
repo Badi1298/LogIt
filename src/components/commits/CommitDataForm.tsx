@@ -1,8 +1,12 @@
 /** biome-ignore-all lint/correctness/noChildrenProp: This is a necessary pattern for rendering the input fields */
+
 import { formOptions, useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { saveData } from "#/utils/commits.functions";
+import { useEffect, useState } from "react";
+import {
+	analyzeWeeklyCommits,
+	fetchGitHistory,
+} from "#/utils/commits.functions";
 import { FetchCommitsInputSchema, type WeeklyReport } from "#/utils/schema";
 import { Button } from "../ui/button";
 import {
@@ -25,29 +29,32 @@ interface CommitDataFormProps {
 	onAnalysisComplete?: (analysis: WeeklyReport) => void;
 }
 
+function DynamicAnalyzingText() {
+	const texts = [
+		"Analyzing timeline with AI...",
+		"Calculating time allocations & breaks...",
+		"Grouping commits by Jira tickets...",
+		"Finalizing weekly report...",
+	];
+	const [index, setIndex] = useState(0);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setIndex((prev) => (prev + 1) % texts.length);
+		}, 3000);
+		return () => clearInterval(interval);
+	}, [texts.length]);
+
+	return <span className="animate-pulse">{texts[index]}</span>;
+}
+
 export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
-	const saveDataFn = useServerFn(saveData);
+	const fetchGitHistoryFn = useServerFn(fetchGitHistory);
+	const analyzeWeeklyCommitsFn = useServerFn(analyzeWeeklyCommits);
 
-	const { mutateAsync } = useMutation({
-		mutationFn: saveDataFn,
-		onSuccess: ({ commits, analysis, error }) => {
-			if (commits) {
-				if (!analysis) {
-					console.warn("No analysis returned from server.");
-					return;
-				}
-
-				if (onAnalysisComplete) {
-					onAnalysisComplete(JSON.parse(analysis));
-				}
-			} else {
-				console.error("Error saving data:", error);
-			}
-		},
-		onError: (error) => {
-			console.error("Mutation error:", error);
-		},
-	});
+	const [loadingState, setLoadingState] = useState<
+		"idle" | "fetching" | "analyzing"
+	>("idle");
 
 	const formOpts = formOptions({
 		validators: {
@@ -60,7 +67,27 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 			authorEmail: "serban.david@flowmatters.com",
 		},
 		onSubmit: async ({ value }) => {
-			await mutateAsync({ data: value });
+			try {
+				setLoadingState("fetching");
+				const gitResult = await fetchGitHistoryFn({ data: value });
+
+				if (gitResult?.commits) {
+					setLoadingState("analyzing");
+					const aiResult = await analyzeWeeklyCommitsFn({
+						data: gitResult.commits,
+					});
+
+					if (aiResult?.analysis && onAnalysisComplete) {
+						onAnalysisComplete(JSON.parse(aiResult.analysis));
+					}
+				} else {
+					console.error("Error fetching git history");
+				}
+			} catch (error) {
+				console.error("Error during submission:", error);
+			} finally {
+				setLoadingState("idle");
+			}
 		},
 	});
 
@@ -177,8 +204,11 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 							}}
 						</form.Field>
 						<Field>
-							<Button type="submit" disabled={form.state.isSubmitting}>
-								{form.state.isSubmitting ? "Submitting..." : "Submit"}
+							<Button type="submit" disabled={loadingState !== "idle"}>
+								{loadingState === "idle" && "Submit"}
+								{loadingState === "fetching" &&
+									"Extracting local Git history..."}
+								{loadingState === "analyzing" && <DynamicAnalyzingText />}
 							</Button>
 							<FieldDescription className="text-center">
 								Your input will be validated and processed upon submission.

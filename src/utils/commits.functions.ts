@@ -9,7 +9,7 @@ import {
 	ServerFetchCommitsInputSchema,
 } from "./schema";
 
-const analyzeWeeklyCommits = createServerFn({ method: "POST" })
+export const analyzeWeeklyCommits = createServerFn({ method: "POST" })
 	.validator((data: unknown) => z.array(CommitItemSchema).parse(data))
 	.handler(async ({ data: commits }) => {
 		// This executes purely on the server side
@@ -56,7 +56,7 @@ const analyzeWeeklyCommits = createServerFn({ method: "POST" })
 		}
 	});
 
-export const saveData = createServerFn({ method: "POST" })
+export const fetchGitHistory = createServerFn({ method: "POST" })
 	.validator(ServerFetchCommitsInputSchema)
 	.handler(async ({ data }) => {
 		try {
@@ -111,12 +111,9 @@ export const saveData = createServerFn({ method: "POST" })
 				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 			);
 
-			const result = await analyzeWeeklyCommits({ data: processedCommits });
-
 			return {
 				success: true,
 				commits: processedCommits,
-				analysis: result.analysis,
 			};
 		} catch (error: unknown) {
 			const errorMessage =
