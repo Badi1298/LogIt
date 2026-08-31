@@ -86,6 +86,16 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 		},
 		onSubmit: async ({ value }) => {
 			try {
+				setLoadingState("checkingDB");
+				const dbResult = await checkExistingAnalysisFn({ data: value });
+
+				if (dbResult?.success && dbResult.analysis) {
+					if (onAnalysisComplete) {
+						onAnalysisComplete(JSON.parse(dbResult.analysis), value);
+					}
+					return;
+				}
+
 				setLoadingState("fetching");
 				const gitResult = await fetchGitHistoryFn({ data: value });
 
@@ -241,11 +251,11 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 							}}
 						</form.Field>
 						<Field>
-							<div className="flex gap-4">
+							<div className="flex flex-col gap-2">
 								<Button
 									type="submit"
 									disabled={loadingState !== "idle"}
-									className="flex-1"
+									className="w-full"
 								>
 									{loadingState === "idle" && "Submit"}
 									{loadingState === "fetching" &&
@@ -253,47 +263,10 @@ export function CommitDataForm({ onAnalysisComplete }: CommitDataFormProps) {
 									{loadingState === "analyzing" && <DynamicAnalyzingText />}
 									{loadingState === "checkingDB" && "Checking Database..."}
 								</Button>
-								<Button
-									type="button"
-									variant="secondary"
-									disabled={loadingState !== "idle"}
-									onClick={async () => {
-										const isValid = await form.validateAllFields("change");
-										if (isValid.length > 0) return; // Validation errors exist
-
-										try {
-											setLoadingState("checkingDB");
-											const result = await checkExistingAnalysisFn({
-												data: form.state.values,
-											});
-											if (
-												result.success &&
-												result.analysis &&
-												onAnalysisComplete
-											) {
-												onAnalysisComplete(
-													JSON.parse(result.analysis),
-													form.state.values,
-												);
-											} else {
-												alert(
-													"No saved analysis found for this query in the database.",
-												);
-											}
-										} catch (err) {
-											console.error(err);
-											alert("Error checking database.");
-										} finally {
-											setLoadingState("idle");
-										}
-									}}
-								>
-									Check DB
-								</Button>
+								<FieldDescription className="text-center">
+									Your input will be validated and processed upon submission.
+								</FieldDescription>
 							</div>
-							<FieldDescription className="text-center">
-								Your input will be validated and processed upon submission.
-							</FieldDescription>
 						</Field>
 					</FieldGroup>
 				</form>
